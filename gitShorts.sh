@@ -89,6 +89,7 @@ function initRepo() {
 		gs init $repo
 	fi
 	if [[ $1 ]]; then
+	read -p "Github username: " username
 		echo "Initializing a new repository now...."
 		git init
 		read -p "Do you want to add a README.md file? (Y/n)" yesOrNo
@@ -100,8 +101,9 @@ function initRepo() {
 			echo "Sounds good, initializing without a README file.."
 		fi
 		git add .
-		git commit -M "Initial commit"
-		git remote add origin -M main
+		git commit -m "Initial commit"
+                git branch -M main
+		git remote add origin git@github.com:$username/$repo.git
 		git push -u origin main
 		echo "Successful! You code base was pushed to the cloud.."
 	fi
