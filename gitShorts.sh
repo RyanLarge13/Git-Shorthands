@@ -153,6 +153,14 @@ function commitRepo() {
 }
 
 function config() {
+	if [[ ! -f ./gitshorts_config ]]; then
+		touch ./gitshorts_config
+		if [ $? -eq 0 ]; then
+			echo "Configuration file created successfully."
+		else
+			echo "Failed to create configuration file."
+		fi
+	fi
 	if [[ $1 = "username" ]]; then
 		read -p "What would you like your new username to be??: " newUsername
 		sed -i "s/USERNAME=.*/USERNAME=$newUsername/" ./gitshorts_config
