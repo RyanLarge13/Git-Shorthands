@@ -21,7 +21,12 @@ function gs {
 		showHelp
 	fi
 	if [[ $1 = "clone" ]]; then
+	  if [[ $2 ]]; then
+		cloneRepo $2
+		fi
+		if [[ ! $2 ]]; then 
 		cloneRepo
+		fi
 	fi
 	if [[ $1 = "init" ]]; then
 		initRepo $2
@@ -93,7 +98,11 @@ function cloneRepo() {
 	if [[ -f ./gitshorts_config ]]; then
 		source ./gitshorts_config
 	fi
-	read -p "Repo name: " repoName
+	if [[ $1 ]]; then 
+	  repoName="$1"
+  else 
+	  read -p "Repo name: " repoName
+	fi
 	if [[ $INSTALLER = "npm" ]]; then
 		read -p "Would you like us to install dependencies after cloning is finished? (Y/n): " installOrNot
 	fi
@@ -161,6 +170,12 @@ function config() {
 			echo "Failed to create configuration file."
 		fi
 	fi
+	if ! grep -q "USERNAME=" ./gitshorts_config; then
+      echo "USERNAME=" >> ./gitshorts_config
+  fi
+  if ! grep -q "INSTALLER=" ./gitshorts_config; then
+      echo "INSTALLER=" >> ./gitshorts_config
+  fi
 	if [[ $1 = "username" ]]; then
 		read -p "What would you like your new username to be??: " newUsername
 		sed -i "s/USERNAME=.*/USERNAME=$newUsername/" ./gitshorts_config
