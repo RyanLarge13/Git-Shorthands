@@ -8,14 +8,17 @@ CYAN="\033[0;36m"
 WHITE="\033[0;37m"
 ENDCOLOR="\e[0m"
 
+USER_HOME_DIR=$HOME
+CONFIG_FILE="$USER_HOME_DIR/gitshorts_config"
+
 function gs {
-	if [[ ! -f ./gitshorts_config ]]; then
+	if [[ ! -f "$CONFIG_FILE" ]]; then
 		echo "No configuration file found. Let's set up your username and installer first."
 		config username
 		config installer
 	fi
-	if [[ -f ./gitshorts_config ]]; then
-		source ./gitshorts_config
+	if [[ -f "$CONFIG_FILE" ]]; then
+		source "$CONFIG_FILE"
 	fi
 	if [[ ! $1 ]]; then
 		showHelp
@@ -90,13 +93,13 @@ function showHelp() {
 }
 
 function cloneRepo() {
-	if [[ ! -f ./gitshorts_config ]]; then
+	if [[ ! -f "$CONFIG_FILE" ]]; then
 		echo "No configuration file found. Let's set up your username and installer first."
 		config username
 		config installer
 	fi
-	if [[ -f ./gitshorts_config ]]; then
-		source ./gitshorts_config
+	if [[ -f "$CONFIG_FILE" ]]; then
+		source "$CONFIG_FILE"
 	fi
 	if [[ $1 ]]; then 
 	  repoName="$1"
@@ -119,13 +122,13 @@ function cloneRepo() {
 }
 
 function initRepo() {
-	if [[ ! -f ./gitshorts_config ]]; then
+	if [[ ! -f "$CONFIG_FILE" ]]; then
 		echo "No configuration file found. Let's set up your username and installer first."
 		config username
 		config installer
 	fi
-	if [[ -f ./gitshorts_config ]]; then
-		source ./gitshorts_config
+	if [[ -f "$CONFIG_FILE" ]]; then
+		source "$CONFIG_FILE"
 	fi
 	if [[ ! $1 ]]; then
 		read -p "Please provide a repo name: " repo
@@ -162,28 +165,28 @@ function commitRepo() {
 }
 
 function config() {
-	if [[ ! -f ./gitshorts_config ]]; then
-		touch ./gitshorts_config
+	if [[ ! -f "$CONFIG_FILE" ]]; then
+		touch "$CONFIG_FILE"
 		if [ $? -eq 0 ]; then
 			echo "Configuration file created successfully."
 		else
 			echo "Failed to create configuration file."
 		fi
 	fi
-	if ! grep -q "USERNAME=" ./gitshorts_config; then
-      echo "USERNAME=" >> ./gitshorts_config
+	if ! grep -q "USERNAME=" "$CONFIG_FILE"; then
+      echo "USERNAME=" >> "$CONFIG_FILE"
   fi
-  if ! grep -q "INSTALLER=" ./gitshorts_config; then
-      echo "INSTALLER=" >> ./gitshorts_config
+  if ! grep -q "INSTALLER=" "$CONFIG_FILE"; then
+      echo "INSTALLER=" >> "$CONFIG_FILE"
   fi
 	if [[ $1 = "username" ]]; then
 		read -p "What would you like your new username to be??: " newUsername
-		sed -i "s/USERNAME=.*/USERNAME=$newUsername/" ./gitshorts_config
+		sed -i "s/USERNAME=.*/USERNAME=$newUsername/" "$CONFIG_FILE"
 		echo "Your new username was set to $newUsername"
 	fi
 	if [[ $1 = "installer" ]]; then
 		read -p "What installer will you be using by default?: " newInstaller
-		sed -i "s/INSTALLER=.*/INSTALLER=$newInstaller/" ./gitshorts_config
+		sed -i "s/INSTALLER=.*/INSTALLER=$newInstaller/" "$CONFIG_FILE"
 		echo "Your new installer was set to $newInstaller"
 	fi
 }
