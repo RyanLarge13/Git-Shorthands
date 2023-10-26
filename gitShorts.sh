@@ -34,6 +34,9 @@ function gs {
 	if [[ $1 = "init" ]]; then
 		initRepo $2
 	fi
+	if [[ $1 = "-p" ]]; then 
+	  pullRepo
+	fi
 	if [[ $1 = "conf" ]]; then
 		if [[ ! $2 ]]; then
 			echo "\nPlease provide which value you would like to change ${CYAN}username${ENDCOLOR} or ${CYAN}installer${ENDCOLOR}"
@@ -72,6 +75,7 @@ function createHelpFile() {
   ${GREEN}gs${ENDCOLOR} ${BLUE}init${ENDCOLOR} ${YELLOW}<repo name>${ENDCOLOR} -- This command will initialize a new local 
   repository and connect it with an exsiting new repo
   on github.\n
+  ${GREEN}gs${ENDCOLOR} ${BLUE}-p${ENDCOLOR} -- Run git pull to update your local repo\n
   ${GREEN}gs${ENDCOLOR} ${BLUE}conf${ENDCOLOR} ${YELLOW}<key>${ENDCOLOR} ${CYAN}<value>${ENDCOLOR} -- To customize your experience
   and add or change values to your gs configuration file, use
   this command to configure each value so gs knows
@@ -162,6 +166,10 @@ function commitRepo() {
 	git commit
 	git push
 	echo "\nSuccessfully pushed updated files to your remote repository.."
+}
+
+function pullRepo() {
+	git pull
 }
 
 function config() {
