@@ -24,6 +24,9 @@ function gs {
 		showHelp
 	fi
 	if [[ $1 = "clone" ]]; then
+	  if [[ $3 ]]; then
+	  cloneRepo $2 $3
+	  fi
 	  if [[ $2 ]]; then
 		cloneRepo $2
 		fi
@@ -115,13 +118,21 @@ function cloneRepo() {
 	fi
 	if [[ $installOrNot = "Y" || $installOrNot = "y" ]]; then
 		echo "Sounds good!!"
-		git clone git@github.com:$USERNAME/$repoName.git
-		cd $repoName && $INSTALLER install
+		if [[ $2 ]]; then 
+		  git clone git@github.com:$2/$repoName.git
+		else 
+	  	git clone git@github.com:$USERNAME/$repoName.git
+		  cd $repoName && $INSTALLER install
+		fi
 	fi
 	if [[ $installOrNot = "n" || $installOrNot = "N" ]]; then
 		echo "No problem.. Cloning into repository now...."
-		git clone git@github.com:$USERNAME/$repoName.git
-		cd $repoName
+		if [[ $2 ]]; then 
+		  git clone git@github.com:$2/$repoName.git
+		else 
+	  	git clone git@github.com:$USERNAME/$repoName.git
+		  cd $repoName
+		fi
 	fi
 }
 
