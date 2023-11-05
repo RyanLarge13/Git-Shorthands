@@ -22,43 +22,42 @@ function gs {
 	fi
 	if [[ ! $1 ]]; then
 		showHelp
-	fi
-	if [[ $1 = "clone" ]]; then
-	  if [[ $3 ]]; then
-	  cloneRepo $2 $3
-	  fi
-	  if [[ $2 ]]; then
-		cloneRepo $2
+	elif [[ $1 = "clone" ]]; then
+		if [[ $3 ]]; then
+			cloneRepo $2 $3
 		fi
-		if [[ ! $2 ]]; then 
-		cloneRepo
+		if [[ $2 ]]; then
+			cloneRepo $2
 		fi
-	fi
-	if [[ $1 = "init" ]]; then
-		initRepo $2
-	fi
-	if [[ $1 = "-p" ]]; then 
-	  pullRepo
-	fi
-	if [[ $1 = "conf" ]]; then
 		if [[ ! $2 ]]; then
-			echo "\nPlease provide which value you would like to change ${CYAN}username${ENDCOLOR} or ${CYAN}installer${ENDCOLOR}"
+			cloneRepo
+		fi
+	elif [[ $1 = "init" ]]; then
+		initRepo $2
+	elif [[ $1 = "-p" ]]; then
+		pullRepo
+	elif [[ $1 = "conf" ]]; then
+		if [[ ! $2 ]]; then
+			printf "Please provide which value you would like to change ${CYAN}username${ENDCOLOR} or ${CYAN}installer${ENDCOLOR}"
 		fi
 		if [[ $2 ]]; then
 			config $2
 		fi
-	fi
-	if [[ $1 = "-H" || $1 = "-h" ]]; then
+	elif [[ $1 = "-H" || $1 = "-h" ]]; then
 		showHelp
-	fi
-	if [[ $1 = "commit" ]]; then
+	elif [[ $1 = "commit" ]]; then
 		commitRepo
+	else
+		createHelpFile "Invalid"
 	fi
 }
 
 function createHelpFile() {
 	touch ./help.txt
 	clear
+	if [[ $1 ]]; then
+		printf "\n${RED}Invalid Argument${ENDCOLOR}\n\n"
+	fi
 	printf "
   Welcome to ${RED}Git Shorts${ENDCOLOR} help line...\nHere is a list of commands that can be ran with gs\n
   COLOR TABLE: 
@@ -67,14 +66,16 @@ function createHelpFile() {
     ${BLUE}BLUE${ENDCOLOR} - command
     ${YELLOW}YELLOW${ENDCOLOR} - arguments || key
     ${CYAN}CYAN${ENDCOLOR} - arguments || value
+	${PURPLE}PURPLE${ENDCOLOR} - optional argument
   ]\n
   CONFIG OPTIONS: 
   [
-    ${YELLOW}KEY${ENDCOLOR}: <username>, ${CYAN}VALUE${ENDCOLOR}: <Your github username> || <false> to ommit
-    ${YELLOW}KEY${ENDCOLOR}: <installer>, ${CYAN}VALUE${ENDCOLOR}: <npm, yarn, etc...> || <false> to ommit
+    ${YELLOW}KEY${ENDCOLOR}: <username>, ${CYAN}VALUE${ENDCOLOR}: <Your github username>
+    ${YELLOW}KEY${ENDCOLOR}: <installer>, ${CYAN}VALUE${ENDCOLOR}: <npm, yarn, etc...>
   ]\n
-  ${GREEN}gs${ENDCOLOR} ${BLUE}clone${ENDCOLOR} -- This will clone an exsisting 
+  ${GREEN}gs${ENDCOLOR} ${BLUE}clone${ENDCOLOR} ${PURPLE}<repo name>${ENDCOLOR} -- This will clone an exsisting 
   repository within your github account.\n
+  ${GREEN}gs${ENDCOLOR} ${BLUE}clone${ENDCOLOR} ${PURPLE}<repo name>${ENDCOLOR} ${PURPLE}<git hub username>${ENDCOLOR} -- This will clone a repo from another users repository\n
   ${GREEN}gs${ENDCOLOR} ${BLUE}init${ENDCOLOR} ${YELLOW}<repo name>${ENDCOLOR} -- This command will initialize a new local 
   repository and connect it with an exsiting new repo
   on github.\n
@@ -108,30 +109,30 @@ function cloneRepo() {
 	if [[ -f "$CONFIG_FILE" ]]; then
 		source "$CONFIG_FILE"
 	fi
-	if [[ $1 ]]; then 
-	  repoName="$1"
-  else 
-	  read -p "Repo name: " repoName
+	if [[ $1 ]]; then
+		repoName="$1"
+	else
+		read -p "Repo name: " repoName
 	fi
 	if [[ $INSTALLER = "npm" ]]; then
 		read -p "Would you like us to install dependencies after cloning is finished? (Y/n): " installOrNot
 	fi
 	if [[ $installOrNot = "Y" || $installOrNot = "y" ]]; then
 		echo "Sounds good!!"
-		if [[ $2 ]]; then 
-		  git clone git@github.com:$2/$repoName.git
-		else 
-	  	git clone git@github.com:$USERNAME/$repoName.git
-		  cd $repoName && $INSTALLER install
+		if [[ $2 ]]; then
+			git clone git@github.com:$2/$repoName.git
+		else
+			git clone git@github.com:$USERNAME/$repoName.git
+			cd $repoName && $INSTALLER install
 		fi
 	fi
 	if [[ $installOrNot = "n" || $installOrNot = "N" ]]; then
 		echo "No problem.. Cloning into repository now...."
-		if [[ $2 ]]; then 
-		  git clone git@github.com:$2/$repoName.git
-		else 
-	  	git clone git@github.com:$USERNAME/$repoName.git
-		  cd $repoName
+		if [[ $2 ]]; then
+			git clone git@github.com:$2/$repoName.git
+		else
+			git clone git@github.com:$USERNAME/$repoName.git
+			cd $repoName
 		fi
 	fi
 }
@@ -187,24 +188,24 @@ function config() {
 	if [[ ! -f "$CONFIG_FILE" ]]; then
 		touch "$CONFIG_FILE"
 		if [ $? -eq 0 ]; then
-			echo "Configuration file created successfully."
+			echo "${GREEN}Configuration file created successfully.${ENDCOLOR}"
 		else
-			echo "Failed to create configuration file."
+			echo "${RED}Failed to create configuration file.${ENDCOLOR}"
 		fi
 	fi
 	if ! grep -q "USERNAME=" "$CONFIG_FILE"; then
-      echo "USERNAME=" >> "$CONFIG_FILE"
-  fi
-  if ! grep -q "INSTALLER=" "$CONFIG_FILE"; then
-      echo "INSTALLER=" >> "$CONFIG_FILE"
-  fi
+		echo "USERNAME=" >>"$CONFIG_FILE"
+	fi
+	if ! grep -q "INSTALLER=" "$CONFIG_FILE"; then
+		echo "INSTALLER=" >>"$CONFIG_FILE"
+	fi
 	if [[ $1 = "username" ]]; then
-		read -p "What would you like your new username to be??: " newUsername
+		read -p "What would you like your new ${GREEN}username${ENDCOLOR} to be??: " newUsername
 		sed -i "s/USERNAME=.*/USERNAME=$newUsername/" "$CONFIG_FILE"
 		echo "Your new username was set to $newUsername"
 	fi
 	if [[ $1 = "installer" ]]; then
-		read -p "What installer will you be using by default?: " newInstaller
+		read -p "What ${GREEN}installer${ENDCOLOR} will you be using by default?: " newInstaller
 		sed -i "s/INSTALLER=.*/INSTALLER=$newInstaller/" "$CONFIG_FILE"
 		echo "Your new installer was set to $newInstaller"
 	fi
