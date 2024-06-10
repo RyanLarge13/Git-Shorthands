@@ -36,9 +36,15 @@ function gs {
 		initRepo $2
 	elif [[ $1 = "-p" ]]; then
 		pullRepo
+	elif [[ $1 = "-m"]]; then
+	 if [[ ! $2 ]]; then
+	   mergeRepo
+	 fi 
+	 if [[ $2 ]]; then
+	   mergeRepo $2
 	elif [[ $1 = "conf" ]]; then
 		if [[ ! $2 ]]; then
-			printf "Please provide which value you would like to change ${CYAN}username${ENDCOLOR} or ${CYAN}installer${ENDCOLOR}"
+			printf "Please provide which value you would like to change\n ${CYAN}username${ENDCOLOR} or ${CYAN}installer${ENDCOLOR}"
 		fi
 		if [[ $2 ]]; then
 			config $2
@@ -177,11 +183,27 @@ function commitRepo() {
 	git add .
 	git commit
 	git push
-	echo "\nSuccessfully pushed updated files to your remote repository.."
+	echo "Successfully pushed updated files to your remote repository.."
 }
 
 function pullRepo() {
 	git pull
+}
+
+function mergeRepo() {
+ if [[ $1 ]]; then
+  branchName ="$1";
+ else
+  read -p "What branch do you wish to merge? " branchName
+ fi
+ read -p "Do you confirm? Merge current branch with branch
+ ${GREEN}$branchName${ENDCOLOR}? (Y/n) " confirm
+ if [[ $confirm = "Y" || $confirm = "y"]]; then
+  printf "\nSounds good. Merging with branch ${GREEN}$branchName${ENDCOLOR}\n"
+  git merge $branchName
+ else 
+  echo "Canceling merge"
+ fi
 }
 
 function config() {
