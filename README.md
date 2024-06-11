@@ -2,11 +2,21 @@
 
 Git Shorthands was built to make some of the longer git commands even easier than they already are...
 
-So far the code written for this repo works only on linux terminals and supplied two functions. 
+So far the code written for this repo works only on linux terminals 
 
-1. Cloning into repositories. Only a Node.js repo is compatable for installing project dependencies with npm.
-2. Initializing a new local git repository connection if the repository already exsists on your online account.
+**~/ gs clone ${REPO NAME}**
 
-Initially when the program loads, it will check to see if a .gitShorts.config file exsists in the current directory. If the file does not
-exsist, bash will create one and store non sensitive credentials to your github account. This allows the program to retreive stored data
-and make the commands even easier.
+***Clone remote repository***
+
+You will be asked if you would like to install project dependencies from the
+root directory of your project after cloning from a repository 
+
+*the package manager set in configuration will be used*
+
+**~/ gs init ${NAME OF REMOTE REPO}**
+
+***Initialize your local repository and push all changes to remote repository***
+
+This command only works if a repository exists remotely 
+
+
