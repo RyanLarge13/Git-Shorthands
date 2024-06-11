@@ -9,7 +9,7 @@ WHITE="\033[0;37m"
 ENDCOLOR="\e[0m"
 
 USER_HOME_DIR=$HOME
-CONFIG_FILE="$USER_HOME_DIR/gitshorts_config"
+CONFIG_FILE="$USER_HOME_DIR/.gitshorts_config"
 
 function gs {
 	if [[ ! -f "$CONFIG_FILE" ]]; then
@@ -36,12 +36,13 @@ function gs {
 		initRepo $2
 	elif [[ $1 = "-p" ]]; then
 		pullRepo
-	elif [[ $1 = "-m"]]; then
-	 if [[ ! $2 ]]; then
-	   mergeRepo
-	 fi 
-	 if [[ $2 ]]; then
-	   mergeRepo $2
+	elif [[ $1 = "-m" ]]; then
+		if [[ ! $2 ]]; then
+			mergeRepo
+		fi
+		if [[ $2 ]]; then
+			mergeRepo $2
+		fi
 	elif [[ $1 = "conf" ]]; then
 		if [[ ! $2 ]]; then
 			printf "Please provide which value you would like to change\n ${CYAN}username${ENDCOLOR} or ${CYAN}installer${ENDCOLOR}"
@@ -183,27 +184,48 @@ function commitRepo() {
 	git add .
 	git commit
 	git push
-	echo "Successfully pushed updated files to your remote repository.."
+	if [[ $? -eq 0 ]]; then
+		echo "Successfully pushed updated files to your remote repository."
+	else
+		echo "${RED}Commit failed${ENDCOLOR} with a status code: ${RED}$?${ENDCOLOR}"
+	fi
 }
 
 function pullRepo() {
 	git pull
+	if [[ $? -eq 0 ]]; then
+		echo "Local repository is now up to date."
+	else
+		echo "${RED}Pull failed${ENDCOLOR} with a status code: ${RED}$?${ENDCOLOR}"
+	fi
 }
 
 function mergeRepo() {
- if [[ $1 ]]; then
-  branchName ="$1";
- else
-  read -p "What branch do you wish to merge? " branchName
- fi
- read -p "Do you confirm? Merge current branch with branch
+	if [[ $1 ]]; then
+		branchName ="$1"
+	else
+		read -p "What branch do you wish to merge? " branchName
+	fi
+	read -p "Do you confirm? Merge current branch with branch
  ${GREEN}$branchName${ENDCOLOR}? (Y/n) " confirm
- if [[ $confirm = "Y" || $confirm = "y"]]; then
-  printf "\nSounds good. Merging with branch ${GREEN}$branchName${ENDCOLOR}\n"
-  git merge $branchName
- else 
-  echo "Canceling merge"
- fi
+	if [[ $confirm = "Y" || $confirm = "y" ]]; then
+		printf "\nSounds good. Merging with branch ${GREEN}$branchName${ENDCOLOR}\n"
+		git merge $branchName
+		if [[ $? -eq 0 ]]; then
+			printf "\nSuccesfully merged with branch ${GREEN}$branchName${ENDCOLOR}\n"
+		else
+			printf "\n${RED}Merge failed${ENDCOLOR} with a status code: ${RED}$?${ENDCOLOR}\n"
+			read -p "Would you like to retry the merge? (Y/n) " remerge
+			if [[ $remerge = "Y" || $remerge = "y" ]]; then
+				echo "${GREEN}$remerge${ENDCOLOR} Sounds good."
+				mergeRepo $branchName
+			else
+				echo "Okay. Canceling merge"
+			fi
+		fi
+	else
+		echo "Canceling merge"
+	fi
 }
 
 function config() {
