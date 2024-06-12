@@ -59,6 +59,15 @@ function gs {
 	fi
 }
 
+function rerunScript() {
+	read -p $1 answer
+	if [[ $anser =~ ^[Yy]$ ]]; then
+		eval $2
+	else
+		echo "Aborted"
+	fi
+}
+
 function createHelpFile() {
 	touch ./help.txt
 	clear
@@ -128,14 +137,14 @@ function cloneRepo() {
 		echo "Sounds good!"
 		if [[ $2 ]]; then
 			git clone git@github.com:$2/$repoName.git
-			if [[ ! $? -eq 0 ]]; then 
-			  echo "${RED}Clone failed${ENDCOLOR} with a status code: ${RED}$?${ENDCOLOR}"
-			  read -p "Would you like to try cloning again (Y/n)? " tryCloneAgain
-			  if [[ try Clone Again = "Y" ||    tryCloneAgain = "y" ]]; then
-			    cloneRepo $1 $2
-			  else 
-			    echo "Canceling clone command"
-			  fi
+			if [[ ! $? -eq 0 ]]; then
+				echo "${RED}Clone failed${ENDCOLOR} with a status code: ${RED}$?${ENDCOLOR}"
+				read -p "Would you like to try cloning again (Y/n)? " tryCloneAgain
+				if [[ tryCloneAgain = "Y" || tryCloneAgain = "y" ]]; then
+					cloneRepo $1 $2
+				else
+					echo "Canceling clone command"
+				fi
 			fi
 		else
 			git clone git@github.com:$USERNAME/$repoName.git
@@ -154,6 +163,7 @@ function cloneRepo() {
 }
 
 function initRepo() {
+	question="Would you like to try initializing again? (Y/n)"
 	if [[ ! -f "$CONFIG_FILE" ]]; then
 		echo "No configuration file found. Let's set up your username and installer first."
 		config username
@@ -165,6 +175,11 @@ function initRepo() {
 	if [[ ! $1 ]]; then
 		read -p "Please provide a repo name: " repo
 		gs init $repo
+		if [[ $? -ne 0 ]]; then
+			printf "${RED}git init${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}\n"
+			rerunScript $question "initRepo"
+			return 1
+		fi
 	fi
 	if [[ $1 ]]; then
 		if [[ ! $USERNAME ]]; then
@@ -172,44 +187,92 @@ function initRepo() {
 		fi
 		echo "Initializing a new repository now...."
 		git init
+		if [[ $? -ne 0 ]]; then
+			printf "${RED}git init failed${ENDCOLOR} with a status code: ${RED}$?${ENDCOLOR}\n"
+			rerunScript $question "initRepo"
+			return 1
+		fi
 		read -p "Do you want to add a README.md file? (Y/n)" yesOrNo
 		if [[ $yesOrNo = "Y" || $yesOrNo = "y" ]]; then
 			touch README.md
-			echo "# $repo" >README.md
-		fi
-		if [[ $yesOrNo = "N" || $yesOrNo = "n" ]]; then
-			echo "Sounds good, initializing without a README file.."
+			if [[ $? -ne 0 ]]; then
+				echo "${RED}Could not create README.md file for your project.${ENDCOLOR}"
+			else
+				echo "# $repo" >README.md
+				echo "${GREEN}Successfully generated README.md file${ENDCOLOR}"
+			fi
+		else
+			echo "Sounds good, initializing ${RED}without${ENDCOLOR} a README.md file.."
 		fi
 		git add .
+		if [[ $? -ne 0 ]]; then
+			printf "${RED}git add .${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}"
+			rerunScript $question "initRepo"
+		fi
 		git commit -m "Initial commit"
+		if [[ $? -ne 0 ]]; then
+			printf "${RED}git commit -m${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}"
+			rerunScript $question "initRepo"
+		fi
 		git branch -M main
+		if [[ $? -ne 0 ]]; then
+			printf "${RED}git branch -M${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}"
+			rerunScript $question "initRepo"
+		fi
 		git remote add origin git@github.com:$USERNAME/$repo.git
+		if [[ $? -ne 0 ]]; then
+			printf "${RED}git remote add origin <origin>${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}"
+			rerunScript $question "initRepo"
+		fi
 		git push -u origin main
+		if [[ $? -ne 0 ]]; then
+			printf "${RED}git push -u${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}"
+			rerunScript $question "initRepo"
+		fi
+		# pick up on this function
 		echo "Successful! Your code base was pushed to the cloud.."
 	fi
 }
 
 function commitRepo() {
 	git add .
-	git commit
-	git push
-	if [[ $? -eq 0 ]]; then
-		echo "Successfully pushed updated files to your remote repository."
-	else
-		echo "${RED}Commit failed${ENDCOLOR} with a status code: ${RED}$?${ENDCOLOR}"
+	question="Would you like to re-run this commit?"
+	if [[ $? -ne 0 ]]; then
+		printf "${RED}git add .${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}/n"
+		rerunScript $question "$commitRepo"
+		return 1
 	fi
+	git commit
+	if [[ $? -ne 0 ]]; then
+		printf "${RED}git commit${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}/n"
+		rerunScript $question "$commitRepo"
+		return 1
+	fi
+	git push
+	if [[ $? -ne 0 ]]; then
+		printf "${RED}git push${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}/n"
+		rerunScript $question "commitRepo"
+		return 1
+	fi
+	echo "Successfully pushed local changes to your remote repository."
+	return 0
 }
 
 function pullRepo() {
 	git pull
 	if [[ $? -eq 0 ]]; then
 		echo "Local repository is now up to date."
+		return 0
 	else
-		echo "${RED}Pull failed${ENDCOLOR} with a status code: ${RED}$?${ENDCOLOR}"
+		printf "${RED}Pull failed${ENDCOLOR} with a status code: ${RED}$?${ENDCOLOR}\n"
+		question="Would you like to pull again? (Y/n)"
+		rerunScript $question "pullRepo"
+		return 1
 	fi
 }
 
 function mergeRepo() {
+	question="Would you like to retry this merge?"
 	if [[ $1 ]]; then
 		branchName ="$1"
 	else
@@ -222,18 +285,15 @@ function mergeRepo() {
 		git merge $branchName
 		if [[ $? -eq 0 ]]; then
 			printf "\nSuccesfully merged with branch ${GREEN}$branchName${ENDCOLOR}\n"
+			return 0
 		else
 			printf "\n${RED}Merge failed${ENDCOLOR} with a status code: ${RED}$?${ENDCOLOR}\n"
-			read -p "Would you like to retry the merge? (Y/n) " remerge
-			if [[ $remerge = "Y" || $remerge = "y" ]]; then
-				echo "${GREEN}$remerge${ENDCOLOR} Sounds good."
-				mergeRepo $branchName
-			else
-				echo "Okay. Canceling merge"
-			fi
+			rerunScript $question "mergeRepo"
+			return 1
 		fi
 	else
 		echo "Canceling merge"
+		return 0
 	fi
 }
 
