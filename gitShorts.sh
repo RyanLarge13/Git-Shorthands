@@ -208,29 +208,34 @@ function initRepo() {
 		if [[ $? -ne 0 ]]; then
 			printf "${RED}git add .${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}"
 			rerunScript $question "initRepo"
+			return 1
 		fi
 		git commit -m "Initial commit"
 		if [[ $? -ne 0 ]]; then
 			printf "${RED}git commit -m${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}"
 			rerunScript $question "initRepo"
+			return 1
 		fi
 		git branch -M main
 		if [[ $? -ne 0 ]]; then
 			printf "${RED}git branch -M${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}"
 			rerunScript $question "initRepo"
+			return 1
 		fi
 		git remote add origin git@github.com:$USERNAME/$repo.git
 		if [[ $? -ne 0 ]]; then
 			printf "${RED}git remote add origin <origin>${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}"
 			rerunScript $question "initRepo"
+			return 1
 		fi
 		git push -u origin main
 		if [[ $? -ne 0 ]]; then
-			printf "${RED}git push -u${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}"
+			printf "${RED}git push -u origin main${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}"
 			rerunScript $question "initRepo"
+			return 1
 		fi
-		# pick up on this function
 		echo "Successful! Your code base was pushed to the cloud.."
+		return 0;
 	fi
 }
 
