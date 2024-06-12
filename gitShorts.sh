@@ -122,12 +122,21 @@ function cloneRepo() {
 		read -p "Repo name: " repoName
 	fi
 	if [[ $INSTALLER = "npm" ]]; then
-		read -p "Would you like us to install dependencies after cloning is finished? (Y/n): " installOrNot
+		read -p "Would you like us to install dependencies with npm after cloning is finished? (Y/n): " installOrNot
 	fi
 	if [[ $installOrNot = "Y" || $installOrNot = "y" ]]; then
-		echo "Sounds good!!"
+		echo "Sounds good!"
 		if [[ $2 ]]; then
 			git clone git@github.com:$2/$repoName.git
+			if [[ ! $? -eq 0 ]]; then 
+			  echo "${RED}Clone failed${ENDCOLOR} with a status code: ${RED}$?${ENDCOLOR}"
+			  read -p "Would you like to try cloning again (Y/n)? " tryCloneAgain
+			  if [[ try Clone Again = "Y" ||    tryCloneAgain = "y" ]]; then
+			    cloneRepo $1 $2
+			  else 
+			    echo "Canceling clone command"
+			  fi
+			fi
 		else
 			git clone git@github.com:$USERNAME/$repoName.git
 			cd $repoName && $INSTALLER install
