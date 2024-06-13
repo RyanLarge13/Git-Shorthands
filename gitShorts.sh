@@ -117,6 +117,7 @@ function showHelp() {
 }
 
 function cloneRepo() {
+	question="Would you like to try cloning (Y/n)? "
 	if [[ ! -f "$CONFIG_FILE" ]]; then
 		echo "No configuration file found. Let's set up your username and installer first."
 		config username
@@ -131,35 +132,44 @@ function cloneRepo() {
 		read -p "Repo name: " repoName
 	fi
 	if [[ $INSTALLER = "npm" ]]; then
-		read -p "Would you like us to install dependencies with npm after cloning is finished? (Y/n): " installOrNot
+		read -p "Would you like us to install dependencies with ${GREEN}$INSTALLER${ENDCOLOR} after cloning is finished? (Y/n): " installOrNot
 	fi
 	if [[ $installOrNot = "Y" || $installOrNot = "y" ]]; then
 		echo "Sounds good!"
 		if [[ $2 ]]; then
 			git clone git@github.com:$2/$repoName.git
 			if [[ ! $? -eq 0 ]]; then
-				echo "${RED}Clone failed${ENDCOLOR} with a status code: ${RED}$?${ENDCOLOR}"
-				read -p "Would you like to try cloning again (Y/n)? " tryCloneAgain
-				if [[ tryCloneAgain = "Y" || tryCloneAgain = "y" ]]; then
-					cloneRepo $1 $2
-				else
-					echo "Canceling clone command"
-				fi
+				rerunScript $question "cloneRepo"
+				return 1
 			fi
 		else
 			git clone git@github.com:$USERNAME/$repoName.git
+			if [[ ! $? -eq 0 ]]; then
+				rerunScript $question "cloneRepo"
+				return 1
+			fi
+			echo "${GREEN}Insatlling deps...${ENDCOLOR}"
 			cd $repoName && $INSTALLER install
 		fi
 	fi
 	if [[ $installOrNot = "n" || $installOrNot = "N" ]]; then
-		echo "No problem.. Cloning into repository now...."
+		echo "No problem. Cloning into ${GREEN}$repoName${ENDCOLOR}"
 		if [[ $2 ]]; then
 			git clone git@github.com:$2/$repoName.git
+			if [[ ! $? -eq 0 ]]; then
+				rerunScript $question "cloneRepo"
+				return 1
+			fi
 		else
 			git clone git@github.com:$USERNAME/$repoName.git
+			if [[ ! $? -eq 0 ]]; then
+				rerunScript $question "cloneRepo"
+				return 1
+			fi
 			cd $repoName
 		fi
 	fi
+	return 0
 }
 
 function initRepo() {
@@ -235,13 +245,13 @@ function initRepo() {
 			return 1
 		fi
 		echo "Successful! Your code base was pushed to the cloud.."
-		return 0;
+		return 0
 	fi
 }
 
 function commitRepo() {
-	git add .
 	question="Would you like to re-run this commit?"
+	git add .
 	if [[ $? -ne 0 ]]; then
 		printf "${RED}git add .${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}/n"
 		rerunScript $question "$commitRepo"
@@ -259,18 +269,18 @@ function commitRepo() {
 		rerunScript $question "commitRepo"
 		return 1
 	fi
-	echo "Successfully pushed local changes to your remote repository."
+	echo "${GREEN}Successfully pushed${ENDCOLOR} local changes to your remote repository."
 	return 0
 }
 
 function pullRepo() {
+	question="Would you like to pull again? (Y/n)"
 	git pull
 	if [[ $? -eq 0 ]]; then
-		echo "Local repository is now up to date."
+		echo "Local repository is now ${GREEN}up to date${ENDCOLOR}."
 		return 0
 	else
 		printf "${RED}Pull failed${ENDCOLOR} with a status code: ${RED}$?${ENDCOLOR}\n"
-		question="Would you like to pull again? (Y/n)"
 		rerunScript $question "pullRepo"
 		return 1
 	fi
