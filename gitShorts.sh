@@ -253,23 +253,23 @@ function commitRepo() {
 	question="Would you like to re-run this commit?"
 	git add .
 	if [[ $? -ne 0 ]]; then
-		printf "${RED}git add .${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}/n"
+		printf "${RED}git add .${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}\n"
 		rerunScript $question "$commitRepo"
 		return 1
 	fi
 	git commit
 	if [[ $? -ne 0 ]]; then
-		printf "${RED}git commit${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}/n"
+		printf "${RED}git commit${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}\n"
 		rerunScript $question "$commitRepo"
 		return 1
 	fi
 	git push
 	if [[ $? -ne 0 ]]; then
-		printf "${RED}git push${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}/n"
+		printf "${RED}git push${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}\n"
 		rerunScript $question "commitRepo"
 		return 1
 	fi
-	printf "${GREEN}Successfully pushed${ENDCOLOR} local changes to your remote repository./n"
+	printf "${GREEN}Successfully pushed${ENDCOLOR} local changes to your remote repository\n"
 	return 0
 }
 
@@ -316,9 +316,9 @@ function config() {
 	if [[ ! -f "$CONFIG_FILE" ]]; then
 		touch "$CONFIG_FILE"
 		if [ $? -eq 0 ]; then
-			printf "${GREEN}Configuration file created successfully.${ENDCOLOR}/n"
+			printf "${GREEN}Configuration file created successfully.${ENDCOLOR}\n"
 		else
-			printf "${RED}Failed to create configuration file.${ENDCOLOR}/n"
+			printf "${RED}Failed to create configuration file.${ENDCOLOR}\n"
 		fi
 	fi
 	if ! grep -q "USERNAME=" "$CONFIG_FILE"; then
