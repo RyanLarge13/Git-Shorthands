@@ -64,7 +64,7 @@ function rerunScript() {
 	if [[ $anser =~ ^[Yy]$ ]]; then
 		eval $2
 	else
-		echo "Aborted"
+		printf "${RED}Command aborted${ENDCOLOR}\n"
 	fi
 }
 
@@ -148,12 +148,12 @@ function cloneRepo() {
 				rerunScript $question "cloneRepo"
 				return 1
 			fi
-			echo "${GREEN}Insatlling deps...${ENDCOLOR}"
+			printf "${GREEN}Insatlling deps...${ENDCOLOR}\n"
 			cd $repoName && $INSTALLER install
 		fi
 	fi
 	if [[ $installOrNot = "n" || $installOrNot = "N" ]]; then
-		echo "No problem. Cloning into ${GREEN}$repoName${ENDCOLOR}"
+		printf "No problem. Cloning into ${GREEN}$repoName${ENDCOLOR}\n"
 		if [[ $2 ]]; then
 			git clone git@github.com:$2/$repoName.git
 			if [[ ! $? -eq 0 ]]; then
@@ -206,13 +206,13 @@ function initRepo() {
 		if [[ $yesOrNo = "Y" || $yesOrNo = "y" ]]; then
 			touch README.md
 			if [[ $? -ne 0 ]]; then
-				echo "${RED}Could not create README.md file for your project.${ENDCOLOR}"
+				printf "${RED}Could not create README.md file for your project.${ENDCOLOR}\n"
 			else
 				echo "# $repo" >README.md
-				echo "${GREEN}Successfully generated README.md file${ENDCOLOR}"
+				printf "${GREEN}Successfully generated README.md file${ENDCOLOR}\n"
 			fi
 		else
-			echo "Sounds good, initializing ${RED}without${ENDCOLOR} a README.md file.."
+			printf "Sounds good, initializing ${RED}without${ENDCOLOR} a README.md file..\n"
 		fi
 		git add .
 		if [[ $? -ne 0 ]]; then
@@ -244,7 +244,7 @@ function initRepo() {
 			rerunScript $question "initRepo"
 			return 1
 		fi
-		echo "Successful! Your code base was pushed to the cloud.."
+		printf "${GREEN}Successful${ENDCOLOR}. Your code base was pushed to the cloud.\n"
 		return 0
 	fi
 }
@@ -269,7 +269,7 @@ function commitRepo() {
 		rerunScript $question "commitRepo"
 		return 1
 	fi
-	echo "${GREEN}Successfully pushed${ENDCOLOR} local changes to your remote repository."
+	printf "${GREEN}Successfully pushed${ENDCOLOR} local changes to your remote repository./n"
 	return 0
 }
 
@@ -277,7 +277,7 @@ function pullRepo() {
 	question="Would you like to pull again? (Y/n)"
 	git pull
 	if [[ $? -eq 0 ]]; then
-		echo "Local repository is now ${GREEN}up to date${ENDCOLOR}."
+		printf "Local repository is now ${GREEN}up to date${ENDCOLOR}.\n"
 		return 0
 	else
 		printf "${RED}Pull failed${ENDCOLOR} with a status code: ${RED}$?${ENDCOLOR}\n"
@@ -316,9 +316,9 @@ function config() {
 	if [[ ! -f "$CONFIG_FILE" ]]; then
 		touch "$CONFIG_FILE"
 		if [ $? -eq 0 ]; then
-			echo "${GREEN}Configuration file created successfully.${ENDCOLOR}"
+			printf "${GREEN}Configuration file created successfully.${ENDCOLOR}/n"
 		else
-			echo "${RED}Failed to create configuration file.${ENDCOLOR}"
+			printf "${RED}Failed to create configuration file.${ENDCOLOR}/n"
 		fi
 	fi
 	if ! grep -q "USERNAME=" "$CONFIG_FILE"; then
@@ -330,12 +330,12 @@ function config() {
 	if [[ $1 = "username" ]]; then
 		read -p "What would you like your new ${GREEN}username${ENDCOLOR} to be??: " newUsername
 		sed -i "s/USERNAME=.*/USERNAME=$newUsername/" "$CONFIG_FILE"
-		echo "Your new username was set to $newUsername"
+		printf "Your new username was set to ${GREEN}$newUsername${ENDCOLOR}\n"
 	fi
 	if [[ $1 = "installer" ]]; then
 		read -p "What ${GREEN}installer${ENDCOLOR} will you be using by default?: " newInstaller
 		sed -i "s/INSTALLER=.*/INSTALLER=$newInstaller/" "$CONFIG_FILE"
-		echo "Your new installer was set to $newInstaller"
+		printf "Your new installer was set to ${GREEN}$newInstaller${ENDCOLOR}\n"
 	fi
 }
 
