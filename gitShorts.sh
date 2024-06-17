@@ -32,6 +32,8 @@ function gs {
 		if [[ ! $2 ]]; then
 			cloneRepo
 		fi
+	elif [[ $1 = "-s" ]]; then
+		status
 	elif [[ $1 = "init" ]]; then
 		initRepo $2
 	elif [[ $1 = "-p" ]]; then
@@ -309,6 +311,15 @@ function mergeRepo() {
 	else
 		echo "Canceling merge"
 		return 0
+	fi
+}
+
+function status() {
+	question = "Would you like to re-run git status?"
+	git status
+	if [[ $? -ne 0 ]]; then
+		printf "${RED}git status${ENDCOLOR} failed with a status code: ${RED}$?${ENDCOLOR}\n"
+		rerunScript $question "status"
 	fi
 }
 
