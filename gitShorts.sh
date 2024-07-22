@@ -133,9 +133,7 @@ function cloneRepo() {
 	else
 		read -p "Repo name: " repoName
 	fi
-	if [[ $INSTALLER = "npm" ]]; then
-		read -p "Would you like us to install dependencies with ${GREEN}$INSTALLER${ENDCOLOR} after cloning is finished? (Y/n): " installOrNot
-	fi
+	read -p "Would you like us to install dependencies with ${GREEN}$INSTALLER${ENDCOLOR} after cloning is finished? (Y/n): " installOrNot
 	if [[ $installOrNot = "Y" || $installOrNot = "y" ]]; then
 		echo "Sounds good!"
 		if [[ $2 ]]; then
