@@ -193,9 +193,6 @@ function initRepo() {
 		return 0
 	fi
 	if [[ $1 ]]; then
-		if [[ ! $USERNAME ]]; then
-			read -p "Github username: " username
-		fi
 		echo "Initializing a new repository now...."
 		git init
 		if [[ $? -ne 0 ]]; then
