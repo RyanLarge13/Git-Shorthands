@@ -190,6 +190,7 @@ function initRepo() {
 			rerunScript $question "initRepo"
 			return 1
 		fi
+		return 0
 	fi
 	if [[ $1 ]]; then
 		if [[ ! $USERNAME ]]; then
