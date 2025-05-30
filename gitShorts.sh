@@ -285,25 +285,21 @@ function pullRepo() {
 }
 
 function mergeRepo() {
-	question="Would you like to retry this merge?"
+	question ="Would you like to retry this merge?"
 	if [[ $1 ]]; then
 		branchName ="$1"
 	else
-		read -p "What branch do you wish to merge? " branchName
+		read -p "What is the name of the main branch? " branchName
 	fi
-	read -p "Do you confirm? Merge current branch with branch
- ${GREEN}$branchName${ENDCOLOR}? (Y/n) " confirm
+	read -p "What branch would you like to merge with ${GREEN}$branchName${ENDCOLOR}? " branchName2
+	read -p "Do you confirm? Merge
+ ${GREEN}$branchName${ENDCOLOR} with branch ${GREEN}$branchName2${ENDCOLOR}? (Y/n) " confirm
 	if [[ $confirm = "Y" || $confirm = "y" ]]; then
-		printf "\nSounds good. Merging with branch ${GREEN}$branchName${ENDCOLOR}\n"
-		git merge $branchName
-		if [[ $? -eq 0 ]]; then
-			printf "\nSuccesfully merged with branch ${GREEN}$branchName${ENDCOLOR}\n"
-			return 0
-		else
-			printf "\n${RED}Merge failed${ENDCOLOR} with a status code: ${RED}$?${ENDCOLOR}\n"
-			rerunScript $question "mergeRepo"
-			return 1
-		fi
+		printf "\nSounds good. Merging...."
+		git checkout $branchName
+		git merge $branchName2 
+		git push 
+		git checkout $branchName2
 	else
 		echo "Canceling merge"
 		return 0
