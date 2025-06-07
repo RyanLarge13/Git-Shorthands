@@ -97,6 +97,8 @@ function createHelpFile() {
   ${GREEN}gs${ENDCOLOR} ${BLUE}init${ENDCOLOR} ${YELLOW}<repo name>${ENDCOLOR} -- This command will initialize a new local 
   repository and connect it with an exsiting new repo
   on github.\n
+  ${GREEN}gs${ENDCOLOR} ${BLUE}-m${ENDCOLOR} ${PURPLE}<branch with latest changes>${ENDCOLOR} -- this will merge the branch you specify first
+  (the one with the latest changes eg. dev branch) with the the branch you specify next (the branch you want to inherit the changes to eg. main wants to merge  branch dev changes). \n
   ${GREEN}gs${ENDCOLOR} ${BLUE}-p${ENDCOLOR} -- Run git pull to update your local repo\n
   ${GREEN}gs${ENDCOLOR} ${BLUE}conf${ENDCOLOR} ${YELLOW}<key>${ENDCOLOR} ${CYAN}<value>${ENDCOLOR} -- To customize your experience
   and add or change values to your gs configuration file, use
