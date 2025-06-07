@@ -297,8 +297,9 @@ function mergeRepo() {
 	if [[ $confirm = "Y" || $confirm = "y" ]]; then
 		printf "\nSounds good. Merging...."
 		git checkout $branchName
-		git merge $branchName2 
-		git push 
+		git pull
+		git merge $branchName2
+		git push
 		git checkout $branchName2
 	else
 		echo "Canceling merge"
