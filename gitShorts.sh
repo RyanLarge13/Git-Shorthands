@@ -46,17 +46,28 @@ function gs {
 		if [[ $2 ]]; then
 			mergeRepo $2
 		fi
-	elif [[ $1 = "conf" ]]; then
+	elif [[ $1 = "conf" || $1 = "config" ]]; then
 		if [[ ! $2 ]]; then
-			printf "Please provide which value you would like to change\n ${CYAN}username${ENDCOLOR} or ${CYAN}installer${ENDCOLOR}"
+			printf "Please provide which value you would like to change\n ${CYAN}1: username${ENDCOLOR} or ${CYAN}2: installer${ENDCOLOR}: "
+			read confValue
+			if [[ $confValue = "1" ]]; then
+			  config "username"
+			elif [[ $confValue = "2" ]]; then
+			  config "installer"
+			else
+			  printf "\n${RED}Provide a valid option${ENDCOLOR}. \n${CYAN}1: username${ENDCOLOR} or ${CYAN}2: installer${ENDCOLOR}\n\n"
+			  gs "conf"
+			fi
 		fi
 		if [[ $2 ]]; then
 			config $2
 		fi
-	elif [[ $1 = "-H" || $1 = "-h" ]]; then
+	elif [[ $1 = "-H" || $1 = "-h" || $1 = "help" ]]; then
 		showHelp
 	elif [[ $1 = "commit" ]]; then
 		commitRepo
+	elif [[ $1 = "-v" || $1 = "version" ]]; then
+		printf "gs 1.0.0"
 	else
 		createHelpFile "Invalid"
 	fi
@@ -108,6 +119,7 @@ function createHelpFile() {
   what to use when running your commands. 
   ${RED}See config option above..${ENDCOLOR}\n
   ${GREEN}gs${ENDCOLOR} ${BLUE}commit${ENDCOLOR} -- To commit your working directory and all files within it to the remote repository\n
+  ${GREEN}gs${ENDCOLOR} ${BLUE}-v${ENDCOLOR} -- Print version.\n
   ${GREEN}gs${ENDCOLOR} ${BLUE}-H${ENDCOLOR} -- Print this help page.\n
   " >help.txt
 	cat "$USER_HOME_DIR/help.txt"
