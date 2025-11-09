@@ -63,7 +63,8 @@ function gs {
 }
 
 function rerunScript() {
-	read -p $1 answer
+	printf $1 
+	read answer
 	if [[ $anser =~ ^[Yy]$ ]]; then
 		eval $2
 	else
@@ -113,11 +114,11 @@ function createHelpFile() {
 }
 
 function showHelp() {
-	if [[ ! -f "./help.txt" ]]; then
+	if [[ ! -f "$USER_HOME_DIR/help.txt" ]]; then
 		createHelpFile
 	else
 		clear
-		cat "./help.txt"
+		cat "$USER_HOME_DIR/help.txt"
 	fi
 }
 
@@ -136,7 +137,8 @@ function cloneRepo() {
 	else
 		read -p "Repo name: " repoName
 	fi
-	read -p "Would you like us to install dependencies with ${GREEN}$INSTALLER${ENDCOLOR} after cloning is finished? (Y/n): " installOrNot
+	printf "Would you like us to install dependencies with ${GREEN}$INSTALLER${ENDCOLOR} after cloning is finished? (Y/n): " 
+	read installOrNot
 	if [[ $installOrNot = "Y" || $installOrNot = "y" ]]; then
 		echo "Sounds good!"
 		if [[ $2 ]]; then
@@ -294,9 +296,11 @@ function mergeRepo() {
 	else
 		read -p "What is the name of the main branch? " branchName
 	fi
-	read -p "What branch would you like to merge with ${GREEN}$branchName${ENDCOLOR}? " branchName2
-	read -p "Do you confirm? Merge
- ${GREEN}$branchName${ENDCOLOR} with branch ${GREEN}$branchName2${ENDCOLOR}? (Y/n) " confirm
+	printf "What branch would you like to merge with ${GREEN}$branchName${ENDCOLOR}? " 
+	read branchName2
+	printf "Do you confirm? Merge
+ ${GREEN}$branchName${ENDCOLOR} with branch ${GREEN}$branchName2${ENDCOLOR}? (Y/n) " 
+ read confirm
 	if [[ $confirm = "Y" || $confirm = "y" ]]; then
 		printf "\nSounds good. Merging...."
 		git checkout $branchName
@@ -335,12 +339,14 @@ function config() {
 		echo "INSTALLER=" >>"$CONFIG_FILE"
 	fi
 	if [[ $1 = "username" ]]; then
-		read -p "What would you like your new ${GREEN}username${ENDCOLOR} to be??: " newUsername
+		printf "What would you like your new ${GREEN}username${ENDCOLOR} to be??: " 
+		read newUsername
 		sed -i "s/USERNAME=.*/USERNAME=$newUsername/" "$CONFIG_FILE"
 		printf "Your new username was set to ${GREEN}$newUsername${ENDCOLOR}\n"
 	fi
 	if [[ $1 = "installer" ]]; then
-		read -p "What ${GREEN}installer${ENDCOLOR} will you be using by default?: " newInstaller
+		printf "What ${GREEN}installer${ENDCOLOR} will you be using by default?: " 
+		read newInstaller
 		sed -i "s/INSTALLER=.*/INSTALLER=$newInstaller/" "$CONFIG_FILE"
 		printf "Your new installer was set to ${GREEN}$newInstaller${ENDCOLOR}\n"
 	fi
