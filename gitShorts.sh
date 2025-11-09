@@ -11,6 +11,7 @@ ENDCOLOR="\e[0m"
 USER_HOME_DIR=$HOME
 CONFIG_FILE="$USER_HOME_DIR/.gitshorts_config"
 
+# A long function defining different options the user can take to control git. This method is the entry point of gs
 function gs {
 	if [[ ! -f "$CONFIG_FILE" ]]; then
 		echo "No configuration file found. Let's set up your username and installer first."
@@ -22,7 +23,7 @@ function gs {
 	fi
 	if [[ ! $1 ]]; then
 		showHelp
-	elif [[ $1 = "clone" ]]; then
+	elif [[ $1 = "clone" || $1 = "-c" ]]; then
 		if [[ $3 ]]; then
 			cloneRepo $2 $3
 		fi
@@ -108,7 +109,7 @@ function createHelpFile() {
   ${GREEN}gs${ENDCOLOR} ${BLUE}commit${ENDCOLOR} -- To commit your working directory and all files within it to the remote repository\n
   ${GREEN}gs${ENDCOLOR} ${BLUE}-H${ENDCOLOR} -- Print this help page.\n
   " >help.txt
-	cat "./help.txt"
+	cat "$USER_HOME_DIR/help.txt"
 }
 
 function showHelp() {
