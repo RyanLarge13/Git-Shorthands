@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #################################
 # Color Config
@@ -337,6 +337,6 @@ function config() {
 
 
 #################################
-# Export gs for shell use
+# Remove comment to export gs for shell use
 #################################
 export -f gs
