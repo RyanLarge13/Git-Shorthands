@@ -1,34 +1,143 @@
-# Git-Shorthands
+# Git Shorts (gs)
 
-Git Shorthands was built to make some of the longer git commands even easier than they already are...
+**Git Shorts** is a lightweight command‑line helper that wraps common Git workflows into short, memorable commands using a single entry point: `gs`.
 
-So far the code written for this repo works only on linux terminals
+Stop typing long git commands and start shipping faster.
 
-**~/ gs clone ${REPO NAME}**
+---
 
-**_Clone remote repository_**
+## 🚀 Features
 
-You will be asked if you would like to install project dependencies from the
-root directory of your project after cloning from a repository
+| Command                      | Description                                                                   |
+| ---------------------------- | ----------------------------------------------------------------------------- |
+| `gs clone <repo>`            | Clone one of your GitHub repositories.                                        |
+| `gs clone <repo> <username>` | Clone another user's repository.                                              |
+| `gs init <repo>`             | Initialize a new repository, optionally create README.md, and push to GitHub. |
+| `gs commit`                  | Stage all changes, commit, and push.                                          |
+| `gs -p`                      | Pull latest changes.                                                          |
+| `gs -m`                      | Merge branches interactively.                                                 |
+| `gs -s`                      | Show `git status`.                                                            |
+| `gs conf`                    | Update local configuration (username, installer).                             |
+| `gs -v`                      | Show the currently installed version.                                         |
+| `gs -h` or `gs -H`           | View help.                                                                    |
 
-_the package manager set in configuration will be used_
+---
 
-**~/ gs init ${NAME OF REMOTE REPO}**
+## ✅ Key Benefits
 
-**_Initialize your local repository and push all changes to remote repository_**
+* Fast repo cloning with automatic dependency installation
+* Quickly initialize repos and push to GitHub in one step
+* Useful merge / pull / commit wrappers
+* Automatically persists username + package installer
+* Built‑in colored help output for quick reference
 
-This command only works if a repository exists remotely
+---
 
-**~/ gs -p**
+## 📦 Installation
 
-**_Update local repository with most up to date code from remote_**
+1. Download `gs` (this script).
+2. Place it somewhere in your PATH, for example:
 
-This command will run git pull and update your local repository. No other pull configurations
-are accepted at this time
+```bash
+mv gs /usr/local/bin/gs
+chmod +x /usr/local/bin/gs
+```
 
-**~/ gs -m ${BRANCH NAME}**
+3. (Optional) Export the function for shell use:
 
-**_Merge current branch with a local branch_**
+```bash
+export -f gs
+```
 
-This command is nearly useless. It is almost no less typing than original git command.. hmm
-Will have to change that at some point. It still works though
+---
+
+## 🧠 Setup
+
+The first time you run any `gs` command, you will be guided through a one‑time setup:
+
+* GitHub username
+* Preferred package installer (`npm`, `pnpm`, `bun`, etc.)
+
+This information is stored in:
+
+```
+~/.gitshorts_config
+```
+
+To update your config at any time:
+
+```bash
+gs conf
+```
+
+---
+
+## 🌱 Examples
+
+Clone one of *your* repos and install dependencies:
+
+```bash
+gs clone my-repo
+```
+
+Clone someone else's repo:
+
+```bash
+gs clone cool-library torvalds
+```
+
+Create a new repo, commit, push, and generate README.md:
+
+```bash
+gs init my-new-project
+```
+
+Commit everything and push:
+
+```bash
+gs commit
+```
+
+---
+
+## 🔧 Config File
+
+Stored at: `~/.gitshorts_config`
+
+Example:
+
+```
+USERNAME=yourGitHubName
+INSTALLER=npm
+```
+
+---
+
+## 🛠 Requirements
+
+* Bash
+* Git installed and configured
+* SSH access to GitHub
+
+---
+
+## 🤝 Contributing
+
+Feel free to fork the repo and submit PRs.
+
+Bug reports / ideas welcome.
+
+---
+
+## 📄 License
+
+MIT License. Use freely and break things.
+
+---
+
+**Happy coding!** ✨
+
+```
+gs commit
+# literally all you need
+```
